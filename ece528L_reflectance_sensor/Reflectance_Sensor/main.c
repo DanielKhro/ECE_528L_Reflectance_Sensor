@@ -21,6 +21,62 @@
 #include "inc/Reflectance_Sensor.h"
 #include "inc/Print_Binary.h"
 
+enum Possibility {
+    CENTER = 0x18,
+    SLIGHTLY_LEFT_FROM_CENTER = 0x1C,
+    SLIGHTLY_RIGHT_FROM_CENTER = 0x38,
+    FAR_LEFT_FROM_CENTER = 0x01,
+    FAR_RIGHT_FROM_CENTER = 0x80,
+    LEFT_TURN = 0xF8,
+    RIGHT_TURN = 0x1F,
+    T_INTERSECTION = 0xFF,
+    DEAD_END = 0x00
+};
+
+void Detect_Line_Position(uint8_t reflectance_sensor_data){
+    switch(reflectance_sensor_data){
+        case CENTER:
+           LED1_Output(RED_LED_OFF);
+           LED2_Output(RGB_LED_GREEN);
+           break;
+        case SLIGHTLY_LEFT_FROM_CENTER:
+           LED1_Output(RED_LED_OFF);
+           LED2_Output(RGB_LED_YELLOW);
+           break;
+        case SLIGHTLY_RIGHT_FROM_CENTER:
+           LED1_Output(RED_LED_OFF);
+           LED2_Output(RGB_LED_PINK);
+           break;
+        case FAR_LEFT_FROM_CENTER:
+           LED1_Output(RED_LED_OFF);
+           LED2_Output(RGB_LED_WHITE);
+           break;
+        case FAR_RIGHT_FROM_CENTER:
+           LED1_Output(RED_LED_OFF);
+           LED2_Output(RGB_LED_SKY_BLUE);
+           break;
+        case LEFT_TURN:
+           LED1_Output(RED_LED_ON);
+           LED2_Output(RGB_LED_WHITE);
+           break;
+        case RIGHT_TURN:
+           LED1_Output(RED_LED_ON);
+           LED2_Output(RGB_LED_SKY_BLUE);
+           break;
+        case T_INTERSECTION:
+           LED1_Output(RED_LED_OFF);
+           LED2_Output(RGB_LED_BLUE);
+           break;
+        case DEAD_END:
+           LED1_Output(RED_LED_OFF);
+           LED2_Output(RGB_LED_RED);
+           break;
+        default:
+           LED1_Output(RED_LED_OFF);
+           LED2_Output(RGB_LED_OFF);
+    }
+}
+
 int main(void)
 {
     // Initialize the 48 MHz Clock
@@ -42,6 +98,7 @@ int main(void)
     while(1)
     {
         reflectance_sensor_data = Reflectance_Sensor_Read(1000);
+        Detect_Line_Position(reflectance_sensor_data);
         Print_Binary(reflectance_sensor_data);
         Clock_Delay1ms(10);
     }
